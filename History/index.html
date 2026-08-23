@@ -56,7 +56,7 @@
                 <p class="text-slate-500 font-medium text-sm">Memuat data...</p>
             </div>
 
-            <!-- List Container (Desktop: Horizontal Grid, Mobile: Vertical) -->
+            <!-- List Container -->
             <div id="historyList" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Card Item diinjeksi via JavaScript -->
             </div>
@@ -76,7 +76,7 @@
         </a>
     </footer>
 
-    <!-- Modal Edit Transaksi -->
+    <!-- Modal Edit & Hapus Transaksi -->
     <div id="editModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 animate-fade-in max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
@@ -87,13 +87,13 @@
             <form id="editForm" class="space-y-4">
                 <input type="hidden" id="editRowId">
 
-                <!-- Nama Lengkap (Disabled / Readonly) -->
+                <!-- Nama Lengkap -->
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Lengkap (Tidak Dapat Diubah)</label>
                     <input type="text" id="editFullName" readonly class="w-full px-3 py-2 bg-slate-100 border border-slate-300 rounded-lg text-slate-600 font-medium cursor-not-allowed outline-none">
                 </div>
 
-                <!-- Foto Bukti Pembayaran (Disabled / Readonly Viewer) -->
+                <!-- Foto Bukti Pembayaran -->
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 mb-1">Bukti Pembayaran (Tidak Dapat Diubah)</label>
                     <div id="editPhotoContainer" class="p-2 border rounded-lg bg-slate-50 flex items-center space-x-3">
@@ -139,26 +139,50 @@
                     <textarea id="editNotes" rows="2" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
                 </div>
 
-                <div class="flex justify-end space-x-3 pt-3 border-t">
-                    <button type="button" id="btnCancelEdit" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition text-sm font-semibold">Batal</button>
-                    <button type="button" id="btnSaveEdit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-semibold">Simpan Perubahan</button>
+                <!-- Footer Modal Action Buttons -->
+                <div class="flex items-center justify-between pt-4 border-t">
+                    <button type="button" id="btnDeleteData" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg transition text-sm font-semibold flex items-center space-x-1.5 shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        <span>Hapus Transaksi</span>
+                    </button>
+                    <div class="flex space-x-2">
+                        <button type="button" id="btnCancelEdit" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition text-sm font-semibold">Batal</button>
+                        <button type="button" id="btnSaveEdit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-semibold">Simpan Perubahan</button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal Pop-up Sukses (Custom Record Payment Alert) -->
-    <div id="successModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-[60]">
+    <!-- Modal Konfirmasi Hapus Data -->
+    <div id="deleteConfirmModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-[60]">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center animate-fade-in border border-slate-100">
-            <!-- Icon Success Animasi/Tailwind -->
-            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
-                <svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-rose-100 mb-4">
+                <svg class="h-8 w-8 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                 </svg>
             </div>
-            <h3 class="text-lg font-bold text-slate-800 mb-1">Berhasil Disimpan!</h3>
-            <p id="successModalMessage" class="text-sm text-slate-500 font-medium mb-6">Data transaksi berhasil diperbarui.</p>
-            <button id="btnCloseSuccessModal" type="button" class="w-full py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-semibold text-sm shadow-md hover:shadow-indigo-200">
+            <h3 class="text-lg font-bold text-slate-800 mb-1">Hapus Transaksi Ini?</h3>
+            <p class="text-sm text-slate-500 font-medium mb-6">Tindakan ini akan menghapus permanen data dan foto bukti pembayaran dari database.</p>
+            <div class="flex space-x-3">
+                <button id="btnCancelDelete" type="button" class="w-1/2 py-2.5 bg-slate-200 text-slate-700 rounded-xl hover:bg-slate-300 transition font-semibold text-sm">
+                    Batal
+                </button>
+                <button id="btnConfirmDelete" type="button" class="w-1/2 py-2.5 bg-rose-600 text-white rounded-xl hover:bg-rose-700 transition font-semibold text-sm shadow-md hover:shadow-rose-200">
+                    Ya, Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Dynamic Status Message (Gagal / Sukses) -->
+    <div id="statusModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-[70]">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center animate-fade-in border border-slate-100">
+            <div id="statusIconContainer" class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4">
+            </div>
+            <h3 id="statusModalTitle" class="text-lg font-bold text-slate-800 mb-1"></h3>
+            <p id="statusModalMessage" class="text-sm text-slate-500 font-medium mb-6"></p>
+            <button id="btnCloseStatusModal" type="button" class="w-full py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-semibold text-sm shadow-md">
                 OK, Mengerti
             </button>
         </div>
@@ -166,7 +190,7 @@
 
     <!-- JavaScript Logic -->
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTS76YkP45rtG9RNp_1Xrn4qtzPaqdYYtDP3uewLjOeSZy2T_NlQlAW4L76l4JO2RF/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMlJ7kWZP1TrxNbM2TbMpRW1sX3T4qMGpUnsr3jlHapvhNBNSrNqWK_wi3SvJFLVQn/exec";
 
         let transactionsData = [];
 
@@ -180,7 +204,48 @@
         const btnCloseModal = document.getElementById('btnCloseModal');
         const btnCancelEdit = document.getElementById('btnCancelEdit');
         const btnSaveEdit = document.getElementById('btnSaveEdit');
+        const btnDeleteData = document.getElementById('btnDeleteData');
         const editAmount = document.getElementById('editAmount');
+
+        const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+        const btnCancelDelete = document.getElementById('btnCancelDelete');
+        const btnConfirmDelete = document.getElementById('btnConfirmDelete');
+
+        const statusModal = document.getElementById('statusModal');
+        const statusIconContainer = document.getElementById('statusIconContainer');
+        const statusModalTitle = document.getElementById('statusModalTitle');
+        const statusModalMessage = document.getElementById('statusModalMessage');
+        const btnCloseStatusModal = document.getElementById('btnCloseStatusModal');
+
+        // Helper Pop-up Status
+        function showStatusModal(isSuccess, title, message) {
+            statusModalTitle.innerText = title;
+            statusModalMessage.innerText = message;
+
+            if (isSuccess) {
+                statusIconContainer.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4";
+                statusIconContainer.innerHTML = `
+                    <svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                    </svg>`;
+                btnCloseStatusModal.className = "w-full py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-semibold text-sm shadow-md";
+            } else {
+                statusIconContainer.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-rose-100 mb-4";
+                statusIconContainer.innerHTML = `
+                    <svg class="h-10 w-10 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>`;
+                btnCloseStatusModal.className = "w-full py-2.5 bg-rose-600 text-white rounded-xl hover:bg-rose-700 transition font-semibold text-sm shadow-md";
+            }
+
+            statusModal.classList.remove('hidden');
+            statusModal.classList.add('flex');
+        }
+
+        btnCloseStatusModal.onclick = () => {
+            statusModal.classList.add('hidden');
+            statusModal.classList.remove('flex');
+        };
 
         // Format Ribuan pada Input Nominal Edit
         editAmount.addEventListener('input', function() {
@@ -211,14 +276,15 @@
                 const result = await response.json();
 
                 if (result.status === 'success') {
-                    transactionsData = result.data;
+                    // Tapis data null/invalid secara ketat sebelum dimasukkan ke variabel global
+                    transactionsData = (result.data || []).filter(item => item && item.fullName && item.fullName.trim() !== "");
                     renderTransactions(transactionsData);
                 } else {
-                    alert('Gagal memuat data: ' + result.message);
+                    showStatusModal(false, 'Gagal Memuat Data', result.message);
                 }
             } catch (error) {
                 console.error(error);
-                alert('Terjadi kesalahan koneksi saat mengambil data.');
+                showStatusModal(false, 'Kesalahan Koneksi', 'Gagal terhubung ke server database.');
             } finally {
                 loadingState.classList.add('hidden');
             }
@@ -227,23 +293,26 @@
         // Render List Transaksi
         function renderTransactions(data) {
             historyList.innerHTML = '';
-
-            if (!data || data.length === 0) {
+        
+            // Pembersihan kedua untuk memastikan tidak ada objek bersisa
+            const validData = (data || []).filter(item => item && item.fullName);
+        
+            if (validData.length === 0) {
                 emptyState.classList.remove('hidden');
                 return;
             }
-
+        
             emptyState.classList.add('hidden');
             historyList.classList.remove('hidden');
-
-            data.forEach(item => {
-                const formattedAmount = new Intl.NumberFormat('id-ID').format(item.amount);
+        
+            validData.forEach(item => {
+                const formattedAmount = new Intl.NumberFormat('id-ID').format(item.amount || 0);
                 const imageUrl = getDirectDriveUrl(item.photoUrl);
-
+            
                 const card = document.createElement('div');
                 card.className = "p-4 bg-slate-50 hover:bg-indigo-50/50 rounded-xl border border-slate-200 transition cursor-pointer flex items-center space-x-4 shadow-sm hover:shadow-md";
                 card.onclick = () => openEditModal(item);
-
+            
                 card.innerHTML = `
                     <img src="${imageUrl}" 
                         loading="lazy"
@@ -267,20 +336,20 @@
 
         // Filter Pencarian Real-time
         searchInput.addEventListener('input', function() {
-            const query = this.value.toLowerCase();
-            const filtered = transactionsData.filter(item => item.fullName.toLowerCase().includes(query));
+            const query = this.value.toLowerCase().trim();
+            const filtered = transactionsData.filter(item => item.fullName && item.fullName.toLowerCase().includes(query));
             renderTransactions(filtered);
         });
 
         // Buka Modal Edit
         function openEditModal(item) {
             document.getElementById('editRowId').value = item.rowId;
-            document.getElementById('editFullName').value = item.fullName;
-            document.getElementById('editPaymentDate').value = item.paymentDate;
-            document.getElementById('editPaymentMethod').value = item.paymentMethod;
-            document.getElementById('editAmount').value = new Intl.NumberFormat('id-ID').format(item.amount);
-            document.getElementById('editPaymentCategory').value = item.paymentCategory;
-            document.getElementById('editNotes').value = item.notes;
+            document.getElementById('editFullName').value = item.fullName || '';
+            document.getElementById('editPaymentDate').value = item.paymentDate || '';
+            document.getElementById('editPaymentMethod').value = item.paymentMethod || 'Cash';
+            document.getElementById('editAmount').value = new Intl.NumberFormat('id-ID').format(item.amount || 0);
+            document.getElementById('editPaymentCategory').value = item.paymentCategory || 'Tunai';
+            document.getElementById('editNotes').value = item.notes || '';
 
             const photoPreview = document.getElementById('editPhotoPreview');
             const photoLink = document.getElementById('editPhotoLink');
@@ -308,7 +377,7 @@
         btnCancelEdit.onclick = closeModal;
         btnRefresh.onclick = fetchTransactions;
 
-        // Simpan Perubahan Data (Update ke Spreadsheet)
+        // Handler Simpan Perubahan Data
         btnSaveEdit.addEventListener('click', async function() {
             const rowId = document.getElementById('editRowId').value;
             const paymentDate = document.getElementById('editPaymentDate').value;
@@ -318,79 +387,97 @@
             const notes = document.getElementById('editNotes').value.trim();
 
             if (!paymentDate || !paymentMethod || !amount || !paymentCategory) {
-                alert('Mohon lengkapi semua data!');
+                showStatusModal(false, 'Data Tidak Lengkap', 'Mohon isi semua bidang formulir yang diperlukan.');
                 return;
             }
 
- // Function Helper untuk Menampilkan Pop-up Sukses
-function showSuccessModal(message) {
-    const successModal = document.getElementById('successModal');
-    const successModalMessage = document.getElementById('successModalMessage');
-    const btnCloseSuccessModal = document.getElementById('btnCloseSuccessModal');
+            btnSaveEdit.disabled = true;
+            btnSaveEdit.innerText = "Memproses...";
 
-    if (message) successModalMessage.innerText = message;
+            const payload = {
+                action: "update",
+                rowId: rowId,
+                paymentDate: paymentDate,
+                paymentMethod: paymentMethod,
+                amount: amount,
+                paymentCategory: paymentCategory,
+                notes: notes
+            };
 
-    successModal.classList.remove('hidden');
-    successModal.classList.add('flex');
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
 
-    btnCloseSuccessModal.onclick = () => {
-        successModal.classList.add('hidden');
-        successModal.classList.remove('flex');
-    };
-}
-
-// Handler Simpan Perubahan
-btnSaveEdit.addEventListener('click', async function() {
-    const rowId = document.getElementById('editRowId').value;
-    const paymentDate = document.getElementById('editPaymentDate').value;
-    const paymentMethod = document.getElementById('editPaymentMethod').value;
-    const amount = editAmount.value.replace(/\./g, '');
-    const paymentCategory = document.getElementById('editPaymentCategory').value;
-    const notes = document.getElementById('editNotes').value.trim();
-
-    if (!paymentDate || !paymentMethod || !amount || !paymentCategory) {
-        alert('Mohon lengkapi semua data!');
-        return;
-    }
-
-    btnSaveEdit.disabled = true;
-    btnSaveEdit.innerText = "Memproses...";
-
-    const payload = {
-        action: "update",
-        rowId: rowId,
-        paymentDate: paymentDate,
-        paymentMethod: paymentMethod,
-        amount: amount,
-        paymentCategory: paymentCategory,
-        notes: notes
-    };
-
-    try {
-        const response = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        });
-        const result = await response.json();
-
-        if (result.status === 'success') {
-            closeModal(); // Tutup modal form edit
-            showSuccessModal('Data transaksi berhasil diperbarui!'); // Tampilkan Pop-up Sukses Custom
-            fetchTransactions(); // Refresh data list history
-        } else {
-            alert('Gagal memperbarui data: ' + result.message);
-        }
-    } catch (error) {
-        console.error(error);
-        alert('Terjadi kesalahan koneksi saat memperbarui data.');
-    } finally {
-        btnSaveEdit.disabled = false;
-        btnSaveEdit.innerText = "Simpan Perubahan";
-    }
-});
+                if (result.status === 'success') {
+                    closeModal();
+                    showStatusModal(true, 'Berhasil Disimpan!', 'Data transaksi berhasil diperbarui.');
+                    await fetchTransactions();
+                } else {
+                    showStatusModal(false, 'Gagal Menyimpan', result.message);
+                }
+            } catch (error) {
+                console.error(error);
+                showStatusModal(false, 'Kesalahan Koneksi', 'Terjadi kesalahan saat memperbarui data.');
+            } finally {
+                btnSaveEdit.disabled = false;
+                btnSaveEdit.innerText = "Simpan Perubahan";
+            }
         });
 
-        // Load data saat pertama kali dibaca
+        // Handler Hapus Data Transaksi
+        btnDeleteData.addEventListener('click', () => {
+            deleteConfirmModal.classList.remove('hidden');
+            deleteConfirmModal.classList.add('flex');
+        });
+
+        btnCancelDelete.onclick = () => {
+            deleteConfirmModal.classList.add('hidden');
+            deleteConfirmModal.classList.remove('flex');
+        };
+
+        btnConfirmDelete.addEventListener('click', async function() {
+            const rowId = document.getElementById('editRowId').value;
+
+            btnConfirmDelete.disabled = true;
+            btnConfirmDelete.innerText = "Menghapus...";
+
+            const payload = {
+                action: "delete",
+                rowId: rowId
+            };
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                deleteConfirmModal.classList.add('hidden');
+                deleteConfirmModal.classList.remove('flex');
+
+                if (result.status === 'success') {
+                    closeModal();
+                    showStatusModal(true, 'Berhasil Dihapus!', 'Data transaksi dan foto bukti telah berhasil dihapus.');
+                    await fetchTransactions();
+                } else {
+                    showStatusModal(false, 'Gagal Menghapus', result.message);
+                }
+            } catch (error) {
+                console.error(error);
+                deleteConfirmModal.classList.add('hidden');
+                deleteConfirmModal.classList.remove('flex');
+                showStatusModal(false, 'Kesalahan Koneksi', 'Terjadi kesalahan saat menghapus data.');
+            } finally {
+                btnConfirmDelete.disabled = false;
+                btnConfirmDelete.innerText = "Ya, Hapus";
+            }
+        });
+
+        // Initial Load Data
         window.onload = fetchTransactions;
     </script>
 </body>
