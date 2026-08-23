@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Records - Byme.Project</title>
+    <link rel="icon" type="image/x-icon" href="../image/IconeByme.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Animasi Kustom Entrance */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-entrance {
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Staggered Delay untuk Elemen */
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header / Navbar -->
+    <header class="bg-indigo-600 text-white shadow-md opacity-0 animate-entrance delay-1">
+        <div class="max-w-4xl mx-auto px-6 py-8 text-center">
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-wide">Payment Records</h1>
+            <p class="text-indigo-200 text-sm md:text-base mt-1.5 font-medium">Byme.Project</p>
+        </div>
+    </header>
+
+    <!-- Main Navigation Container -->
+    <main class="flex-grow max-w-xl w-full mx-auto p-6 md:p-10 flex flex-col justify-center space-y-5">
+        
+        <!-- Menu Item 1: Records (Pencatatan Baru) -->
+        <a href="Input/index.html" class="opacity-0 animate-entrance delay-3 group bg-slate-800 hover:bg-indigo-900 text-white rounded-2xl p-5 shadow-lg hover:shadow-indigo-500/20 transition-all duration-300 transform hover:-translate-y-1 flex items-center space-x-5 border border-slate-700/50">
+            <div class="bg-white/10 p-3.5 rounded-xl group-hover:bg-indigo-600 transition duration-300 flex-shrink-0">
+                <svg class="w-7 h-7 text-white group-hover:scale-110 transition duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+            </div>
+            <div class="flex-grow">
+                <h2 class="text-lg md:text-xl font-bold tracking-wide group-hover:text-indigo-200 transition">Records</h2>
+                <p class="text-xs text-slate-400 mt-0.5">Catat formulir pembayaran baru</p>
+            </div>
+            <svg class="w-5 h-5 text-slate-400 group-hover:text-white group-hover:translate-x-1 transition duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </a>
+
+        <!-- Menu Item 2: Transaction History -->
+        <a href="History/index.html" class="opacity-0 animate-entrance delay-2 group bg-slate-800 hover:bg-indigo-900 text-white rounded-2xl p-5 shadow-lg hover:shadow-indigo-500/20 transition-all duration-300 transform hover:-translate-y-1 flex items-center space-x-5 border border-slate-700/50">
+            <div class="bg-white/10 p-3.5 rounded-xl group-hover:bg-indigo-600 transition duration-300 flex-shrink-0">
+                <svg class="w-7 h-7 text-white group-hover:scale-110 transition duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <div class="flex-grow">
+                <h2 class="text-lg md:text-xl font-bold tracking-wide group-hover:text-indigo-200 transition">Transaction History</h2>
+                <p class="text-xs text-slate-400 mt-0.5">Lihat dan edit seluruh riwayat transaksi</p>
+            </div>
+            <svg class="w-5 h-5 text-slate-400 group-hover:text-white group-hover:translate-x-1 transition duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </a>
+
+        <!-- Menu Item 3: Export Transaksion -->
+        <a href="Export/index.html" class="opacity-0 animate-entrance delay-4 group bg-slate-800 hover:bg-indigo-900 text-white rounded-2xl p-5 shadow-lg hover:shadow-indigo-500/20 transition-all duration-300 transform hover:-translate-y-1 flex items-center space-x-5 border border-slate-700/50">
+            <div class="bg-white/10 p-3.5 rounded-xl group-hover:bg-indigo-600 transition duration-300 flex-shrink-0">
+                <svg class="w-7 h-7 text-white group-hover:scale-110 transition duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
+            </div>
+            <div class="flex-grow">
+                <h2 class="text-lg md:text-xl font-bold tracking-wide group-hover:text-indigo-200 transition">Export Transaksion</h2>
+                <p class="text-xs text-slate-400 mt-0.5">Cetak dan unduh kwitansi pembayaran PNG</p>
+            </div>
+            <svg class="w-5 h-5 text-slate-400 group-hover:text-white group-hover:translate-x-1 transition duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </a>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-300 text-center py-5 mt-auto opacity-0 animate-entrance delay-5">
+        <p class="text-sm font-semibold tracking-wide">Byme Project</p>
+        <a href="https://www.instagram.com/rapv.rmdhni" target="_blank" class="inline-block mt-0.5">
+            <p class="text-xs text-indigo-400 hover:text-indigo-300 transition font-medium">Create by rapv.rmdhni</p>
+        </a>
+    </footer>
+
+</body>
+</html>

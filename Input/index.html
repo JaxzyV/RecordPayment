@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="../image/IconeByme.png">
+    <title>Pencatatan Transaksi - Byme.Project</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in {
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 flex flex-col font-sans">
+
+    <!-- Navbar -->
+    <header class="bg-indigo-600 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-6 py-6 text-center">
+            <h1 class="text-3xl font-extrabold tracking-wide">Records</h1>
+            <p class="text-indigo-200 text-sm mt-1 font-medium">Byme.Project</p>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-4xl w-full mx-auto p-4 md:p-8 animate-fade-in">
+        <form id="transactionForm" class="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-slate-200/80">
+            <h2 class="text-xl font-bold text-slate-800 mb-6 border-b pb-3">Formulir Pencatatan Transaksi</h2>
+
+            <!-- Desktop Horizontal (Grid 2 Kolom) / Mobile Vertical (1 Kolom) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Nama Lengkap -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Lengkap</label>
+                    <input type="text" id="fullName" required placeholder="Masukkan nama lengkap" 
+                        class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+                </div>
+
+                <!-- Tanggal Bayar -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Tanggal Pembayaran</label>
+                    <input type="date" id="paymentDate" required 
+                        class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+                </div>
+
+                <!-- Metode Pembayaran -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Metode Pembayaran</label>
+                    <select id="paymentMethod" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition bg-white">
+                        <option value="" disabled selected>Pilih metode</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Transfer E-Wallet">Transfer E-Wallet</option>
+                        <option value="Transfer E-Banking">Transfer E-Banking</option>
+                    </select>
+                </div>
+
+                <!-- Nominal Pembayaran -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Nominal Pembayaran (Rp)</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-2.5 text-slate-400 font-medium">Rp</span>
+                        <input type="text" id="amount" required placeholder="0" 
+                            class="w-full pl-12 pr-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition font-semibold">
+                    </div>
+                </div>
+
+                <!-- Kategori Pembayaran -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Kategori Pembayaran</label>
+                    <select id="paymentCategory" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition bg-white">
+                        <option value="" disabled selected>Pilih kategori</option>
+                        <option value="Bayar Dimuka">Bayar Dimuka</option>
+                        <option value="Tunai">Tunai</option>
+                    </select>
+                </div>
+
+                <!-- Upload Bukti Pembayaran -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Upload Bukti Pembayaran</label>
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    <div onclick="document.getElementById('fileInput').click()" 
+                        class="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center cursor-pointer hover:border-indigo-500 hover:bg-slate-50 transition">
+                        <svg class="mx-auto h-10 w-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        <p class="mt-2 text-sm text-slate-600 font-medium">Klik atau seret foto bukti pembayaran ke sini</p>
+                    </div>
+
+                    <!-- Container Preview Upload -->
+                    <div id="previewContainer" class="hidden mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <img id="imagePreview" src="" alt="Bukti Pembayaran" class="h-16 w-16 object-cover rounded-md border">
+                            <span id="fileName" class="text-sm font-medium text-slate-700 truncate max-w-xs"></span>
+                        </div>
+                        <button type="button" id="removeImage" class="text-red-500 hover:text-red-700 text-sm font-semibold">Hapus</button>
+                    </div>
+                </div>
+
+                <!-- Catatan Tambahan -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Catatan Tambahan</label>
+                    <textarea id="notes" rows="3" placeholder="Tambahkan catatan jika ada..." 
+                        class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"></textarea>
+                </div>
+
+            </div>
+
+            <!-- Tombol Simpan -->
+            <div class="mt-8 flex justify-end">
+                <button type="button" id="btnSubmit" 
+                    class="w-full md:w-auto px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200">
+                    Simpan Transaksi
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-300 text-center py-4 mt-auto">
+        <p class="text-sm font-semibold">Byme Project</p>
+        <a href="https://www.instagram.com/rapv.rmdhni">
+        <p class="text-xs text-slate-400 mt-0.5" style="color: blue;">Create by rapv.rmdhni</p>
+        </a>
+    </footer>
+
+    <!-- Modal Pop-up Validasi -->
+    <div id="validationModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-fade-in">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Konfirmasi Data Transaksi</h3>
+            <div class="space-y-2 text-sm text-slate-600 mb-6">
+                <p><strong>Nama:</strong> <span id="valName"></span></p>
+                <p><strong>Tanggal:</strong> <span id="valDate"></span></p>
+                <p><strong>Metode:</strong> <span id="valMethod"></span></p>
+                <p><strong>Nominal:</strong> Rp <span id="valAmount"></span></p>
+                <p><strong>Kategori:</strong> <span id="valCategory"></span></p>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button id="btnCancel" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition text-sm font-semibold">Batal</button>
+                <button id="btnConfirm" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-semibold">Ya, Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pop-up Pesan Status Custom -->
+    <div id="messageModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 text-center animate-fade-in">
+            <!-- Icon Dinamis -->
+            <div id="modalIconContainer" class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4">
+                <!-- Icon SVG diinjeksi via JS -->
+            </div>
+            <h3 id="modalTitle" class="text-lg font-bold text-slate-800 mb-2"></h3>
+            <p id="modalMessage" class="text-sm text-slate-600 mb-6"></p>
+            <button id="btnCloseMessage" class="w-full py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-semibold">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic Update -->
+    <script>
+        // Masukkan URL Web App Google Apps Script Anda di sini
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylKBBVjuRGbafp45rTfpwrZd5PLxAT26AuJEeNgusyeJ7Jo_YUkSaw0uMhblW2Rorh/exec";
+
+        const amountInput = document.getElementById('amount');
+        const fileInput = document.getElementById('fileInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const fileName = document.getElementById('fileName');
+        const removeImage = document.getElementById('removeImage');
+        const btnSubmit = document.getElementById('btnSubmit');
+        const validationModal = document.getElementById('validationModal');
+        const btnCancel = document.getElementById('btnCancel');
+        const btnConfirm = document.getElementById('btnConfirm');
+
+        // Variabel penampung file
+        let fileBase64 = "";
+        let fileData = null;
+
+        // Format Ribuan Otomatis (Kelipatan 3 angka)
+        amountInput.addEventListener('input', function(e) {
+            let value = this.value.replace(/\D/g, '');
+            if (value) {
+                this.value = new Intl.NumberFormat('id-ID').format(value);
+            } else {
+                this.value = '';
+            }
+        });
+
+        // Live Preview Upload Gambar & Konversi ke Base64
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                fileData = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    fileName.textContent = file.name;
+                    previewContainer.classList.remove('hidden');
+                    // Mengambil data murni Base64
+                    fileBase64 = e.target.result.split(',')[1];
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        removeImage.addEventListener('click', function() {
+            fileInput.value = '';
+            fileBase64 = "";
+            fileData = null;
+            previewContainer.classList.add('hidden');
+            imagePreview.src = '';
+        });
+
+        // Trigger Pop-Up Validasi
+        btnSubmit.addEventListener('click', function() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const paymentDate = document.getElementById('paymentDate').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const amount = amountInput.value.trim();
+            const paymentCategory = document.getElementById('paymentCategory').value;
+
+            if (!fullName || !paymentDate || !paymentMethod || !amount || !paymentCategory) {
+                alert('Mohon lengkapi semua bidang yang wajib diisi!');
+                return;
+            }
+
+            document.getElementById('valName').textContent = fullName;
+            document.getElementById('valDate').textContent = paymentDate;
+            document.getElementById('valMethod').textContent = paymentMethod;
+            document.getElementById('valAmount').textContent = amount;
+            document.getElementById('valCategory').textContent = paymentCategory;
+
+            validationModal.classList.remove('hidden');
+            validationModal.classList.add('flex');
+        });
+
+        btnCancel.addEventListener('click', function() {
+            validationModal.classList.add('hidden');
+            validationModal.classList.remove('flex');
+        });
+
+        // Simpan Data ke Google Spreadsheet & Google Drive
+        btnConfirm.addEventListener('click', async function() {
+            validationModal.classList.add('hidden');
+            validationModal.classList.remove('flex');
+
+            if (SCRIPT_URL === "MASUKKAN_WEB_APP_URL_GOOGLE_APPS_SCRIPT_DI_SINI") {
+                alert("Silakan masukkan Web App URL Google Apps Script pada variabel SCRIPT_URL terlebih dahulu.");
+                return;
+            }
+
+            // Ubah tampilan tombol saat proses pengiriman
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "Menyimpan Data...";
+
+            const payload = {
+                fullName: document.getElementById('fullName').value.trim(),
+                paymentDate: document.getElementById('paymentDate').value,
+                paymentMethod: document.getElementById('paymentMethod').value,
+                amount: amountInput.value.replace(/\./g, ''), // Mengirim nominal murni angka
+                paymentCategory: document.getElementById('paymentCategory').value,
+                notes: document.getElementById('notes').value.trim(),
+                fileBase64: fileBase64,
+                fileName: fileData ? fileData.name : "",
+                mimeType: fileData ? fileData.type : ""
+            };
+
+            // Elemen Modal Pesan
+    const messageModal = document.getElementById('messageModal');
+    const modalIconContainer = document.getElementById('modalIconContainer');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const btnCloseMessage = document.getElementById('btnCloseMessage');
+
+            // Fungsi pembantu untuk menampilkan Pop-up Pesan Custom
+            function showCustomMessage(type, title, message) {
+                if (type === 'success') {
+                    modalIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 text-green-600 mb-4";
+                    modalIconContainer.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+                } else {
+                    modalIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-600 mb-4";
+                    modalIconContainer.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                }
+            
+                modalTitle.textContent = title;
+                modalMessage.textContent = message;
+            
+                messageModal.classList.remove('hidden');
+                messageModal.classList.add('flex');
+            }
+
+            // Event menutup modal pesan
+            btnCloseMessage.addEventListener('click', function() {
+                messageModal.classList.add('hidden');
+                messageModal.classList.remove('flex');
+            });
+
+            // Update Blok Try-Catch Pengiriman Data
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+            
+                if (result.status === 'success') {
+                    showCustomMessage('success', 'Berhasil!', 'Data dan foto bukti pembayaran berhasil disimpan.');
+                    document.getElementById('transactionForm').reset();
+                    removeImage.click();
+                } else {
+                    showCustomMessage('error', 'Gagal Menyimpan', result.message);
+                }
+            } catch (error) {
+                console.error(error);
+                showCustomMessage('error', 'Kesalahan Sistem', 'Terjadi kesalahan koneksi saat mengirim data.');
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "Simpan Transaksi";
+            }
+        });
+    </script>
+</body>
+</html>
