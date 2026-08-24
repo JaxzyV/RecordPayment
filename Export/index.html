@@ -150,7 +150,9 @@
                     <p class="text-xs text-slate-500 font-medium">Bukti Pembayaran / Kwitansi Resmi</p>
                 </div>
                 <div class="text-right">
-                    <span class="inline-block text-indigo-700 text-xs font-bold px-3 py-1 uppercase">LUNAS</span>
+                    <!-- ELEMEN BARU: Nomor Kwitansi Otomatis -->
+                    <p id="receiptNumber" class="text-xs font-bold text-slate-600 tracking-wide mb-1"></p>
+                    <span class="inline-block text-indigo-700 text-xs font-bold px-3 py-1 uppercase rounded-md">LUNAS</span>
                 </div>
             </div>
 
@@ -177,16 +179,16 @@
                 </tr>
             </table>
 
-            <div class="bg-indigo-50 rounded-xl p-4 flex justify-between items-center border border-indigo-100 mb-6">
-                <span class="text-sm font-bold text-slate-700 uppercase">Jumlah Pembayaran</span>
-                <span id="receiptAmount" class="text-2xl font-black text-indigo-600"></span>
-            </div>
-
-            <div class="flex justify-between items-end text-xs text-slate-400 border-t pt-4">
-                <p>Dokumen ini sah diunduh secara otomatis dari sistem Byme.Project.</p>
-            </div>
+        <div class="bg-indigo-50 rounded-xl p-4 flex justify-between items-center border border-indigo-100 mb-6">
+            <span class="text-sm font-bold text-slate-700 uppercase">Jumlah Pembayaran</span>
+            <span id="receiptAmount" class="text-2xl font-black text-indigo-600"></span>
         </div>
+
+        <div class="flex justify-between items-end text-xs text-slate-400 border-t pt-4">
+            <p>Dokumen ini sah diunduh secara otomatis dari sistem Byme.Project.</p>
+        </div>  
     </div>
+</div>
 
     <!-- JavaScript Logic -->
     <script>
@@ -281,17 +283,44 @@
         function openDetailModal(item) {
             selectedTransaction = item;
 
+            // 1. Hitung Nomor Kwitansi dari rowId (Baris 2 = Urutan 001)
+            const sequenceNumber = item.rowId ? Number(item.rowId) - 1 : 1;
+            const formattedSeq = String(sequenceNumber).padStart(3, '0');
+            const receiptNo = `KW-Byme-${formattedSeq}`;
+
+            // 2. Isi data ke Modal Detail Tampilan
+            const detailReceiptNumberEl = document.getElementById('detailReceiptNumber');
+            if (detailReceiptNumberEl) {
+                detailReceiptNumberEl.innerText = receiptNo;
+            }
+        
             document.getElementById('detailFullName').innerText = item.fullName;
             document.getElementById('detailPaymentDate').innerText = item.paymentDate;
             document.getElementById('detailPaymentMethod').innerText = item.paymentMethod;
             document.getElementById('detailAmount').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(item.amount);
             document.getElementById('detailPaymentCategory').innerText = item.paymentCategory;
             document.getElementById('detailNotes').innerText = item.notes && item.notes !== '-' ? item.notes : 'Tidak ada catatan tambahan.';
+        
+            // 3. Isi data ke Template Kwitansi Tersembunyi (untuk Ekspor PNG)
+            const receiptNumberEl = document.getElementById('receiptNumber');
+            if (receiptNumberEl) {
+                receiptNumberEl.innerText = receiptNo;
+            }
+        
+            const receiptNameEl = document.getElementById('receiptName');
+            if (receiptNameEl) {
+                receiptNameEl.innerText = item.fullName || '-';
+                document.getElementById('receiptDate').innerText = item.paymentDate || '-';
+                document.getElementById('receiptMethod').innerText = item.paymentMethod || '-';
+                document.getElementById('receiptCategory').innerText = item.paymentCategory || '-';
+                document.getElementById('receiptNotes').innerText = item.notes || '-';
+                document.getElementById('receiptAmount').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(item.amount || 0);
+            }
 
+            // 4. Tampilkan Modal
             detailModal.classList.remove('hidden');
             detailModal.classList.add('flex');
         }
-
         function closeDetailModal() {
             detailModal.classList.add('hidden');
             detailModal.classList.remove('flex');
