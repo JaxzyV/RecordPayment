@@ -142,17 +142,26 @@
     </div>
 
     <!-- Template Kwitansi Tersembunyi untuk Konversi Gambar PNG -->
-    <div class="absolute left-[-9999px] top-[-9999px]">
-        <div id="receiptTemplate" class="w-[600px] bg-white p-8 border-2 border-indigo-600 font-sans text-slate-800">
+<!-- Template Kwitansi Tersembunyi untuk Konversi Gambar PNG -->
+<div class="absolute left-[-9999px] top-[-9999px]">
+    <div id="receiptTemplate" class="relative w-[600px] bg-white p-8 border-2 border-indigo-600 font-sans text-slate-800 overflow-hidden">
+        
+        <!-- WATERMARK BACKGROUND (Latar Belakang Logo) -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+            <img src="../image/IconeByme.png" alt="Watermark" class="w-80 h-80 object-contain opacity-10 select-none">
+        </div>
+
+        <!-- KONTEN KWITANSI (z-10 Agar Tetap di Atas Watermark) -->
+        <div class="relative z-10">
             <div class="flex justify-between items-center border-b-2 border-indigo-600 pb-4 mb-6">
                 <div>
                     <h2 class="text-2xl font-extrabold text-indigo-600 tracking-wider">BYME.PROJECT</h2>
                     <p class="text-xs text-slate-500 font-medium">Bukti Pembayaran / Kwitansi Resmi</p>
                 </div>
                 <div class="text-right">
-                    <!-- ELEMEN BARU: Nomor Kwitansi Otomatis -->
+                    <!-- Nomor Kwitansi Otomatis -->
                     <p id="receiptNumber" class="text-xs font-bold text-slate-600 tracking-wide mb-1"></p>
-                    <span class="inline-block text-indigo-700 text-xs font-bold px-3 py-1 uppercase rounded-md">LUNAS</span>
+                    <span class="inline-block text-green-600 text-xl font-bold px-3 uppercase rounded-md">LUNAS</span>
                 </div>
             </div>
 
@@ -179,217 +188,256 @@
                 </tr>
             </table>
 
-        <div class="bg-indigo-50 rounded-xl p-4 flex justify-between items-center border border-indigo-100 mb-6">
-            <span class="text-sm font-bold text-slate-700 uppercase">Jumlah Pembayaran</span>
-            <span id="receiptAmount" class="text-2xl font-black text-indigo-600"></span>
+            <div class="bg-indigo-50/80 backdrop-blur-sm rounded-xl p-4 flex justify-between items-center border border-indigo-100 mb-6">
+                <span class="text-sm font-bold text-slate-700 uppercase">Jumlah Pembayaran</span>
+                <span id="receiptAmount" class="text-2xl font-black text-indigo-600"></span>
+            </div>
+
+            <div class="flex justify-between items-end text-xs text-slate-400 border-t pt-4">
+                <p>Dokumen ini sah diunduh secara otomatis dari sistem Byme.Project.</p>
+            </div>
         </div>
 
-        <div class="flex justify-between items-end text-xs text-slate-400 border-t pt-4">
-            <p>Dokumen ini sah diunduh secara otomatis dari sistem Byme.Project.</p>
-        </div>  
     </div>
 </div>
 
-    <!-- JavaScript Logic -->
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMlJ7kWZP1TrxNbM2TbMpRW1sX3T4qMGpUnsr3jlHapvhNBNSrNqWK_wi3SvJFLVQn/exec";
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMlJ7kWZP1TrxNbM2TbMpRW1sX3T4qMGpUnsr3jlHapvhNBNSrNqWK_wi3SvJFLVQn/exec";
 
-        let transactionsData = [];
-        let selectedTransaction = null;
+let transactionsData = [];
+let selectedTransaction = null;
 
-        const searchInput = document.getElementById('searchInput');
-        const exportList = document.getElementById('exportList');
-        const loadingState = document.getElementById('loadingState');
-        const emptyState = document.getElementById('emptyState');
-        const btnRefresh = document.getElementById('btnRefresh');
+const searchInput = document.getElementById('searchInput');
+const exportList = document.getElementById('exportList');
+const loadingState = document.getElementById('loadingState');
+const emptyState = document.getElementById('emptyState');
+const btnRefresh = document.getElementById('btnRefresh');
 
-        const detailModal = document.getElementById('detailModal');
-        const btnCloseDetailModal = document.getElementById('btnCloseDetailModal');
-        const btnCancelDetail = document.getElementById('btnCancelDetail');
-        const btnDownloadReceipt = document.getElementById('btnDownloadReceipt');
+const detailModal = document.getElementById('detailModal');
+const btnCloseDetailModal = document.getElementById('btnCloseDetailModal');
+const btnCancelDetail = document.getElementById('btnCancelDetail');
+const btnDownloadReceipt = document.getElementById('btnDownloadReceipt');
 
-        const successModal = document.getElementById('successModal');
-        const btnCloseSuccessModal = document.getElementById('btnCloseSuccessModal');
+const successModal = document.getElementById('successModal');
+const btnCloseSuccessModal = document.getElementById('btnCloseSuccessModal');
 
-        // Helper Konversi URL Google Drive
-        function getDirectDriveUrl(url) {
-            if (!url || url === '-') return 'https://via.placeholder.com/150?text=No+Image';
-            if (url.includes('drive.google.com')) {
-                const matches = url.match(/[-\w]{25,}/);
-                if (matches) return `https://lh3.googleusercontent.com/d/${matches[0]}`;
-            }
-            return url;
+// Helper Konversi URL Google Drive
+function getDirectDriveUrl(url) {
+    if (!url || url === '-') return 'https://via.placeholder.com/150?text=No+Image';
+    if (url.includes('drive.google.com')) {
+        const matches = url.match(/[-\w]{25,}/);
+        if (matches) return `https://lh3.googleusercontent.com/d/${matches[0]}`;
+    }
+    return url;
+}
+
+// Fetch Data Transaksi
+async function fetchTransactions() {
+    loadingState.classList.remove('hidden');
+    exportList.classList.add('hidden');
+    emptyState.classList.add('hidden');
+
+    try {
+        const response = await fetch(SCRIPT_URL + "?action=read");
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            transactionsData = result.data;
+            renderExportList(transactionsData);
+        } else {
+            alert('Gagal memuat data: ' + result.message);
         }
+    } catch (error) {
+        console.error(error);
+        alert('Terjadi kesalahan koneksi saat mengambil data.');
+    } finally {
+        loadingState.classList.add('hidden');
+    }
+}
 
-        // Fetch Data Transaksi
-        async function fetchTransactions() {
-            loadingState.classList.remove('hidden');
-            exportList.classList.add('hidden');
-            emptyState.classList.add('hidden');
+// Render List Card Item
+function renderExportList(data) {
+    exportList.innerHTML = '';
 
-            try {
-                const response = await fetch(SCRIPT_URL + "?action=read");
-                const result = await response.json();
+    if (!data || data.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+    }
 
-                if (result.status === 'success') {
-                    transactionsData = result.data;
-                    renderExportList(transactionsData);
-                } else {
-                    alert('Gagal memuat data: ' + result.message);
+    emptyState.classList.add('hidden');
+    exportList.classList.remove('hidden');
+
+    data.forEach(item => {
+        const imageUrl = getDirectDriveUrl(item.photoUrl);
+
+        const card = document.createElement('div');
+        card.className = "p-4 bg-slate-50 hover:bg-indigo-50/50 rounded-xl border border-slate-200 transition cursor-pointer flex items-center space-x-4 shadow-sm hover:shadow-md";
+        card.onclick = () => openDetailModal(item);
+
+        card.innerHTML = `
+            <img src="${imageUrl}" 
+                loading="lazy"
+                alt="Bukti" 
+                class="h-16 w-16 object-cover rounded-lg border flex-shrink-0 bg-slate-200"
+                onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=Error';">
+            <div class="flex-grow overflow-hidden">
+                <h4 class="font-bold text-slate-800 text-base truncate">${item.fullName}</h4>
+                <p class="text-xs text-slate-400 font-medium">Klik untuk ekspor detail kwitansi</p>
+            </div>
+        `;
+        exportList.appendChild(card);
+    });
+}
+
+// Buka Modal Detail Transaksi
+function openDetailModal(item) {
+    selectedTransaction = item;
+
+    // 1. Hitung Nomor Kwitansi dari rowId (Baris 2 = Urutan 001)
+    const sequenceNumber = item.rowId ? Number(item.rowId) - 1 : 1;
+    const formattedSeq = String(sequenceNumber).padStart(3, '0');
+    const receiptNo = `KW-Byme-${formattedSeq}`;
+
+    // 2. Isi data ke Modal Detail Tampilan
+    const detailReceiptNumberEl = document.getElementById('detailReceiptNumber');
+    if (detailReceiptNumberEl) {
+        detailReceiptNumberEl.innerText = receiptNo;
+    }
+
+    document.getElementById('detailFullName').innerText = item.fullName;
+    document.getElementById('detailPaymentDate').innerText = item.paymentDate;
+    document.getElementById('detailPaymentMethod').innerText = item.paymentMethod;
+    document.getElementById('detailAmount').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(item.amount);
+    document.getElementById('detailPaymentCategory').innerText = item.paymentCategory;
+    document.getElementById('detailNotes').innerText = item.notes && item.notes !== '-' ? item.notes : 'Tidak ada catatan tambahan.';
+
+    // 3. Isi data ke Template Kwitansi Tersembunyi (untuk Ekspor PNG)
+    const receiptNumberEl = document.getElementById('receiptNumber');
+    if (receiptNumberEl) {
+        receiptNumberEl.innerText = receiptNo;
+    }
+
+    const receiptNameEl = document.getElementById('receiptName');
+    if (receiptNameEl) {
+        receiptNameEl.innerText = item.fullName || '-';
+        document.getElementById('receiptDate').innerText = item.paymentDate || '-';
+        document.getElementById('receiptMethod').innerText = item.paymentMethod || '-';
+        document.getElementById('receiptCategory').innerText = item.paymentCategory || '-';
+        document.getElementById('receiptNotes').innerText = item.notes || '-';
+        document.getElementById('receiptAmount').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(item.amount || 0);
+    }
+
+    // 4. Tampilkan Modal
+    detailModal.classList.remove('hidden');
+    detailModal.classList.add('flex');
+}
+
+function closeDetailModal() {
+    detailModal.classList.add('hidden');
+    detailModal.classList.remove('flex');
+}
+
+// Tampilkan Custom Success Modal
+function showSuccessModal() {
+    successModal.classList.remove('hidden');
+    successModal.classList.add('flex');
+}
+
+btnCloseSuccessModal.onclick = () => {
+    successModal.classList.add('hidden');
+    successModal.classList.remove('flex');
+};
+
+// Helper Deteksi Perangkat iOS
+function isIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+// Ekspor / Download Kwitansi Kompatibel iOS Safari & Android
+btnDownloadReceipt.addEventListener('click', function() {
+    if (!selectedTransaction) return;
+
+    btnDownloadReceipt.disabled = true;
+    btnDownloadReceipt.innerText = "Membuat Kwitansi...";
+
+    // Inject Data ke Template Kwitansi
+    document.getElementById('receiptName').innerText = selectedTransaction.fullName;
+    document.getElementById('receiptDate').innerText = selectedTransaction.paymentDate;
+    document.getElementById('receiptMethod').innerText = selectedTransaction.paymentMethod;
+    document.getElementById('receiptCategory').innerText = selectedTransaction.paymentCategory;
+    document.getElementById('receiptNotes').innerText = selectedTransaction.notes && selectedTransaction.notes !== '-' ? selectedTransaction.notes : '-';
+    document.getElementById('receiptAmount').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(selectedTransaction.amount);
+
+    const receiptElement = document.getElementById('receiptTemplate');
+
+    // Render DOM ke Canvas dengan Opsi Kompatibilitas Lengkap
+    html2canvas(receiptElement, { 
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        logging: false
+    }).then(canvas => {
+        const cleanName = selectedTransaction.fullName.replace(/[^a-zA-Z0-9]/g, '_');
+        const fileName = `Kwitansi_${cleanName}.png`;
+
+        // PENANGANAN KHUSUS IOS SAFARI
+        if (isIOS()) {
+            canvas.toBlob(blob => {
+                if (!blob) {
+                    // Fallback jika blob gagal di iOS
+                    const imgData = canvas.toDataURL('image/png');
+                    const newTab = window.open();
+                    if (newTab) {
+                        newTab.document.write(`<img src="${imgData}" style="width:100%; height:auto;" />`);
+                    } else {
+                        window.location.href = imgData;
+                    }
+                    return;
                 }
-            } catch (error) {
-                console.error(error);
-                alert('Terjadi kesalahan koneksi saat mengambil data.');
-            } finally {
-                loadingState.classList.add('hidden');
-            }
-        }
-
-        // Render List Card Item
-        function renderExportList(data) {
-            exportList.innerHTML = '';
-
-            if (!data || data.length === 0) {
-                emptyState.classList.remove('hidden');
-                return;
-            }
-
-            emptyState.classList.add('hidden');
-            exportList.classList.remove('hidden');
-
-            data.forEach(item => {
-                const imageUrl = getDirectDriveUrl(item.photoUrl);
-
-                const card = document.createElement('div');
-                card.className = "p-4 bg-slate-50 hover:bg-indigo-50/50 rounded-xl border border-slate-200 transition cursor-pointer flex items-center space-x-4 shadow-sm hover:shadow-md";
-                card.onclick = () => openDetailModal(item);
-
-                card.innerHTML = `
-                    <img src="${imageUrl}" 
-                        loading="lazy"
-                        alt="Bukti" 
-                        class="h-16 w-16 object-cover rounded-lg border flex-shrink-0 bg-slate-200"
-                        onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=Error';">
-                    <div class="flex-grow overflow-hidden">
-                        <h4 class="font-bold text-slate-800 text-base truncate">${item.fullName}</h4>
-                        <p class="text-xs text-slate-400 font-medium">Klik untuk ekspor detail kwitansi</p>
-                    </div>
-                `;
-                exportList.appendChild(card);
-            });
-        }
-
-        // Buka Modal Detail Transaksi (Tanpa Menampilkan Gambar Foto)
-        function openDetailModal(item) {
-            selectedTransaction = item;
-
-            // 1. Hitung Nomor Kwitansi dari rowId (Baris 2 = Urutan 001)
-            const sequenceNumber = item.rowId ? Number(item.rowId) - 1 : 1;
-            const formattedSeq = String(sequenceNumber).padStart(3, '0');
-            const receiptNo = `KW-Byme-${formattedSeq}`;
-
-            // 2. Isi data ke Modal Detail Tampilan
-            const detailReceiptNumberEl = document.getElementById('detailReceiptNumber');
-            if (detailReceiptNumberEl) {
-                detailReceiptNumberEl.innerText = receiptNo;
-            }
-        
-            document.getElementById('detailFullName').innerText = item.fullName;
-            document.getElementById('detailPaymentDate').innerText = item.paymentDate;
-            document.getElementById('detailPaymentMethod').innerText = item.paymentMethod;
-            document.getElementById('detailAmount').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(item.amount);
-            document.getElementById('detailPaymentCategory').innerText = item.paymentCategory;
-            document.getElementById('detailNotes').innerText = item.notes && item.notes !== '-' ? item.notes : 'Tidak ada catatan tambahan.';
-        
-            // 3. Isi data ke Template Kwitansi Tersembunyi (untuk Ekspor PNG)
-            const receiptNumberEl = document.getElementById('receiptNumber');
-            if (receiptNumberEl) {
-                receiptNumberEl.innerText = receiptNo;
-            }
-        
-            const receiptNameEl = document.getElementById('receiptName');
-            if (receiptNameEl) {
-                receiptNameEl.innerText = item.fullName || '-';
-                document.getElementById('receiptDate').innerText = item.paymentDate || '-';
-                document.getElementById('receiptMethod').innerText = item.paymentMethod || '-';
-                document.getElementById('receiptCategory').innerText = item.paymentCategory || '-';
-                document.getElementById('receiptNotes').innerText = item.notes || '-';
-                document.getElementById('receiptAmount').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(item.amount || 0);
-            }
-
-            // 4. Tampilkan Modal
-            detailModal.classList.remove('hidden');
-            detailModal.classList.add('flex');
-        }
-        function closeDetailModal() {
-            detailModal.classList.add('hidden');
-            detailModal.classList.remove('flex');
-        }
-
-        // Tampilkan Custom Success Modal
-        function showSuccessModal() {
-            successModal.classList.remove('hidden');
-            successModal.classList.add('flex');
-        }
-
-        btnCloseSuccessModal.onclick = () => {
-            successModal.classList.add('hidden');
-            successModal.classList.remove('flex');
-        };
-
-        // Ekspor / Download Kwitansi ke Gambar Format PNG
-        btnDownloadReceipt.addEventListener('click', function() {
-            if (!selectedTransaction) return;
-
-            btnDownloadReceipt.disabled = true;
-            btnDownloadReceipt.innerText = "Membuat Kwitansi...";
-
-            // Inject Data ke Template Kwitansi
-            document.getElementById('receiptName').innerText = selectedTransaction.fullName;
-            document.getElementById('receiptDate').innerText = selectedTransaction.paymentDate;
-            document.getElementById('receiptMethod').innerText = selectedTransaction.paymentMethod;
-            document.getElementById('receiptCategory').innerText = selectedTransaction.paymentCategory;
-            document.getElementById('receiptNotes').innerText = selectedTransaction.notes && selectedTransaction.notes !== '-' ? selectedTransaction.notes : '-';
-            document.getElementById('receiptAmount').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(selectedTransaction.amount);
-
-            const receiptElement = document.getElementById('receiptTemplate');
-
-            // Render DOM ke Canvas & Download
-            html2canvas(receiptElement, { scale: 2 }).then(canvas => {
+                const blobUrl = URL.createObjectURL(blob);
                 const link = document.createElement('a');
-                const cleanName = selectedTransaction.fullName.replace(/[^a-zA-Z0-9]/g, '_');
-                link.download = `Kwitansi_${cleanName}.png`;
-                link.href = canvas.toDataURL('image/png');
+                link.href = blobUrl;
+                link.download = fileName;
                 link.click();
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+            }, 'image/png');
+        } else {
+            // PENANGANAN MURNI ANDROID / DESKTOP
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
 
-                closeDetailModal();
-                showSuccessModal();
-            }).catch(error => {
-                console.error("Gagal mengunduh kwitansi:", error);
-                alert("Terjadi kesalahan saat memproses kwitansi gambar.");
-            }).finally(() => {
-                btnDownloadReceipt.disabled = false;
-                btnDownloadReceipt.innerHTML = `
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    <span>Download Kwitansi</span>
-                `;
-            });
-        });
+        closeDetailModal();
+        showSuccessModal();
+    }).catch(error => {
+        console.error("Gagal mengunduh kwitansi:", error);
+        alert("Terjadi kesalahan saat memproses kwitansi gambar.");
+    }).finally(() => {
+        btnDownloadReceipt.disabled = false;
+        btnDownloadReceipt.innerHTML = `
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            <span>Download Kwitansi</span>
+        `;
+    });
+});
 
-        // Filter Search Real-time
-        searchInput.addEventListener('input', function() {
-            const query = this.value.toLowerCase();
-            const filtered = transactionsData.filter(item => item.fullName.toLowerCase().includes(query));
-            renderExportList(filtered);
-        });
+// Filter Search Real-time
+searchInput.addEventListener('input', function() {
+    const query = this.value.toLowerCase();
+    const filtered = transactionsData.filter(item => item.fullName.toLowerCase().includes(query));
+    renderExportList(filtered);
+});
 
-        // Event Listeners
-        btnCloseDetailModal.onclick = closeDetailModal;
-        btnCancelDetail.onclick = closeDetailModal;
-        btnRefresh.onclick = fetchTransactions;
+// Event Listeners
+btnCloseDetailModal.onclick = closeDetailModal;
+btnCancelDetail.onclick = closeDetailModal;
+btnRefresh.onclick = fetchTransactions;
 
-        // Load Data Pertama Kali
-        window.onload = fetchTransactions;
+// Load Data Pertama Kali
+window.onload = fetchTransactions;
     </script>
 </body>
 </html>
